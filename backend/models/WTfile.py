@@ -1,7 +1,10 @@
 from flask import Flask, jsonify, request
 import mysql.connector
+from flask_cors import CORS
 
 app = Flask(__name__)
+
+cors = CORS(app)
 
 mydb = mysql.connector.connect(host="localhost", user="markbac17", passwd="A9ZUflJCgmYHoQFG", database="baggagebuddy")
 
@@ -52,7 +55,7 @@ def insert_customers():
     values = (data['f_name'],data['l_name'],data['delivery_conf_status'])
     print(values)
     mycursor.execute(sql, values)
-    mydb.commit
+    mydb.commit()
     return jsonify(['OK'])
 
 @app.route('/insert_deliveries', methods=["POST"])
@@ -60,27 +63,66 @@ def insert_deliveries():
     mycursor = mydb.cursor()
     data = request.get_json()
     sql = """INSERT INTO delivery_data (
-            bag_tag_number, 
-            bag_tag_group, 
-            delivery_location_lat, 
-            delivery_location_long)
-            VALUES (?, ?, ?, ?);"""
-    values = ("a","b" ,"1" ,"2" )
+            delivery_qr_code,
+            bag_tag_number,
+            bag_tag_group,
+            delivery_location_lat,
+            delivery_location_long,
+            delivery_location_name,
+            delivery_location_zip,
+            current_location,
+            current_location_lat,
+            current_location_long,
+            current_location_timestamp,
+            delivery_window_start_time,
+            delivery_window_end_time,
+            delivery_status,
+            data_storage_status,
+            data_storage_datetime_start,
+            data_storage_datetime_end
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+
+    values = (data['delivery_qr_code'], data['bag_tag_number'], 
+            data['bag_tag_group'], data['delivery_location_lat'], 
+            data['delivery_location_long'], data['delivery_location_name'],
+            data['delivery_location_zip'], data['current_location'],
+            data['current_location_lat'], data['current_location_long'],
+            data['current_location_timestamp'], data['delivery_window_start_time'],
+            data['delivery_window_end_time'], data['delivery_status'],
+            data['data_storage_status'], data['data_storage_datetime_start'],
+            data['data_storage_datetime_end']
+            )
+
     mycursor.execute(sql, values)
-    return jsonify(result)
+    mydb.commit()
+    return jsonify(['OK'])
 
 @app.route('/insert_delivery_items', methods=["POST"])
 def insert_delivery_items():
     mycursor = mydb.cursor()
     data = request.get_json()
     sql = """INSERT INTO delivery_items (
+            bt_ref,
+            color,
+            type,
+            LD,
             bag_tag_number,
             customer_id,
-            delivery_status)
-            VALUES (?, ?, ?, ?)"""
-    values = ("a", "b" ,"1" ,"2" )
+            delivery_status
+            ) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s);"""
+    
+    values = (data['bt_ref'],data['color'],
+                data['type'], data['LD'],
+                data['bag_tag_number'],
+                data['customer_id'],
+                data['delivery_status']
+            )
+    
     mycursor.execute(sql, values)
-    return jsonify(result)
+    mydb.commit()
+    return jsonify(['OK'])
 
 @app.route('/insert_secrets', methods=["POST"])
 def insert_secrets():
