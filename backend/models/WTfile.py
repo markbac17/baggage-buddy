@@ -1,12 +1,23 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 import mysql.connector
 from flask_cors import CORS
+from flask_qrcode import QRcode
+
 
 app = Flask(__name__)
 
 cors = CORS(app)
+qrcode = QRcode(app)
 
-mydb = mysql.connector.connect(host="localhost", user="markbac17", passwd="A9ZUflJCgmYHoQFG", database="baggagebuddy")
+mydb = mysql.connector.connect(host="localhost", user="markbac17", passwd="", database="baggagebuddy")
+
+
+@app.route("/qrcode", methods=["GET"])
+def get_qrcode():
+    # please get /qrcode?data=<qrcode_data>
+    data = request.args.get("data", "")
+    return send_file(qrcode(data, mode="raw"), mimetype="image/png")
+
 
 # SELECT
 @app.route('/select_all_customers', methods=["GET"])
@@ -16,6 +27,29 @@ def select_all_customers():
     mycursor.execute(sql)
     result = mycursor.fetchall()
     return jsonify(result)
+
+@app.route('/select_delivery', methods=["GET"])
+def select_delivery():
+    mycursor = mydb.cursor()
+    data = request.args.get("data", "")
+    sql = "SELECT * FROM delivery_items WHERE bt_ref ='" + data + "';"
+    
+    values = (data)
+    print(sql,values)
+    mycursor.execute(sql)
+    result = mycursor.fetchone()
+    mydb.commit()
+    file = dict()
+    file['id'] = result[0]
+    file['file_ref'] = result[1]
+    file['color'] = result[2]
+    file['type'] = result[3]
+    file['LD'] = result[4]
+    file['bag_tag_number'] = result[5]
+    file['customer_id'] = result[6]
+    file['delivery_status'] = result[7]
+    print(file)
+    return jsonify(file)
 
 @app.route('/select_all_deliveries', methods=["GET"])
 def select_all_deliveries():
