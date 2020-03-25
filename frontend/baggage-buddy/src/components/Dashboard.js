@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
 import WTFile from './WTFile'
-import Vendor from './Vendor'
 
 function Dashboard() {
   const [wtfile, setWtfile] = useState({});

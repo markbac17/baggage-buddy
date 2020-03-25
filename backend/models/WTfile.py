@@ -9,7 +9,7 @@ app = Flask(__name__)
 cors = CORS(app)
 qrcode = QRcode(app)
 
-mydb = mysql.connector.connect(host="localhost", user="markbac17", passwd="", database="baggagebuddy")
+mydb = mysql.connector.connect(host="localhost", user="markbac17", passwd="A9ZUflJCgmYHoQFG", database="baggagebuddy")
 
 
 @app.route("/qrcode", methods=["GET"])

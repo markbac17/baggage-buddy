@@ -84,3 +84,31 @@ body {
   grid-template-columns: repeat(4, 1fr);
   text-align: center;
 }
+
+.wtfile-list {
+  background-color: white;
+  margin: auto;
+  width: 50%;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #EFEFEF;
+  box-shadow:
+    0 1x rgba(0, 0, 0, 15),
+    0 10px 0 -5px #eee,
+    0 10px -4px rgba(0, 0, 0, 15),
+    0 20px -10px #eee,
+    0 20px -9px rgba(0, 0, 0, 15);
+}
+
+.wtfile-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 30px 20px 0;
+  width: 70%;
+  border-bottom: 1px solid #cecece;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 100;
+  font-size: 15px;
+  color: #333333;
+}

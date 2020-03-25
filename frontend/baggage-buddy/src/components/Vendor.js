@@ -1,7 +1,6 @@
 import React, {useState, useEffect } from 'react';
-import ViewList from './ViewList';
-import ViewData from './ViewData'
 import '../App.css';
+import WTFiles from './WTFiles';
 
 function Vendor() {
   const [data, setData] = useState([]);
@@ -24,14 +23,13 @@ function Vendor() {
     fetchData();
   }, [url])
 
-  const output = data.map((file) => {return <p><button>{file[0]}</button>,{file[1]},{file[2]},{file[3]}{file[4]},{file[5]},{file[6]},{file[7]}</p>})
-  console.log(output)
+  const files = data.map((file) =>  <WTFiles file={file}/> )
+  console.log(files)
   return (
     <div className="App">
-      <h2>View Files</h2>
-      { isLoading ? <h3>Loading...</h3> : output}
+      {files}
     </div>
   );
 }
 
-export default Vendor;
+export default Vendor
