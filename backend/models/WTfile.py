@@ -18,62 +18,83 @@ def get_qrcode():
     data = request.args.get("data", "")
     return send_file(qrcode(data, mode="raw"), mimetype="image/png")
 
-
 # SELECT
 @app.route('/select_all_customers', methods=["GET"])
 def select_all_customers():
     mycursor = mydb.cursor()
     sql = 'SELECT * from customer_data;'
     mycursor.execute(sql)
-    result = mycursor.fetchall()
-    return jsonify(result)
+    row_headers=[x[0] for x in mycursor.description]
+    rv = mycursor.fetchall()
+    json_data=[]
+    for result in rv:
+        json_data.append(dict(zip(row_headers,result)))
+    return jsonify(json_data)
 
 @app.route('/select_delivery', methods=["GET"])
 def select_delivery():
     mycursor = mydb.cursor()
     data = request.args.get("data", "")
     sql = "SELECT * FROM delivery_items WHERE bt_ref ='" + data + "';"
-    
     values = (data)
-    print(sql,values)
     mycursor.execute(sql)
-    result = mycursor.fetchone()
-    mydb.commit()
-    file = dict()
-    file['id'] = result[0]
-    file['file_ref'] = result[1]
-    file['color'] = result[2]
-    file['type'] = result[3]
-    file['LD'] = result[4]
-    file['bag_tag_number'] = result[5]
-    file['customer_id'] = result[6]
-    file['delivery_status'] = result[7]
-    print(file)
-    return jsonify(file)
+    row_headers=[x[0] for x in mycursor.description]
+    rv = mycursor.fetchall()
+    json_data=[]
+    for result in rv:
+        json_data.append(dict(zip(row_headers,result)))
+    return jsonify(json_data)
+
+@app.route('/select_delivery_data', methods=["GET"])
+def select_delivery_data():
+    mycursor = mydb.cursor()
+    data = request.args.get("data", "")
+    sql = "SELECT * FROM delivery_data WHERE bag_tag_group='" + data + "';"
+    print(sql)
+    values = (data)
+    print(data)
+    mycursor.execute(sql)
+    row_headers=[x[0] for x in mycursor.description]
+    rv = mycursor.fetchall()
+    json_data=[]
+    for result in rv:
+        json_data.append(dict(zip(row_headers,result)))
+    return jsonify(json_data)
 
 @app.route('/select_all_deliveries', methods=["GET"])
 def select_all_deliveries():
     mycursor = mydb.cursor()
     sql = 'SELECT * from delivery_data;'
     mycursor.execute(sql)
-    result = mycursor.fetchall()
-    return jsonify(result)
+    row_headers=[x[0] for x in mycursor.description]
+    rv = mycursor.fetchall()
+    json_data=[]
+    for result in rv:
+        json_data.append(dict(zip(row_headers,result)))
+    return jsonify(json_data)
 
 @app.route('/select_all_delivery_items', methods=["GET"])
 def select_all_delivery_items():
     mycursor = mydb.cursor()
     sql = 'SELECT * from delivery_items;'
     mycursor.execute(sql)
-    result = mycursor.fetchall()
-    return jsonify(result)
+    row_headers=[x[0] for x in mycursor.description]
+    rv = mycursor.fetchall()
+    json_data=[]
+    for result in rv:
+        json_data.append(dict(zip(row_headers,result)))
+    return jsonify(json_data)
 
 @app.route('/select_all_secret_data', methods=["GET"])
-def select_all_secret_dta():
+def select_all_secret_data():
     mycursor = mydb.cursor()
     sql = 'SELECT * from secret_data_to_be_deleted;'
-    mycursor.execute(sql)
-    result = mycursor.fetchall()
-    return jsonify(result)
+    row_headers=[x[0] for x in mycursor.description]
+    rv = mycursor.fetchall()
+    json_data=[]
+    for result in rv:
+        json_data.append(dict(zip(row_headers,result)))
+    return jsonify(json_data)
 
 #INSERT
 @app.route('/insert_customers', methods=["POST"])

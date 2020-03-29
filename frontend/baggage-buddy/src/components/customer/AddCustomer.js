@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 
-function Customer () {
+const useStyles = makeStyles(theme => ({root: {  '& > *': {margin: theme.spacing(1),},},}));
+
+function AddCustomers () {
   const [route, setRoute] = useState("http://baggage-buddy.duckdns.org:9014/insert_customers")
   const [f_name, setF_name] = useState("")
   const [l_name, setL_name] = useState("")
@@ -22,25 +27,17 @@ function Customer () {
       console.log(configs, route)
       const response = await fetch(route, configs);
       const createAccount = await response.json();
-      output.innerHTML = "<p>"+createAccount["response"]+"</p>";
+    //   output.innerHTML = "<p>"+createAccount["response"]+"</p>";
     } catch (error) {
       console.log(error);
     }
   }
-
+  const classes = useStyles();
   return (
-    <div className="Customer">
-      <h2>Customer</h2>
-      <h4>Add Customer</h4>
-      <div id="createAccount"/>
-      <form>
-        <input id="f_name" placeholder="First" onChange={e => setF_name(e.target.value)} ></input>
-        <input id="l_name" placeholder="Last" onChange={e => setL_name(e.target.value)} ></input>
-        <input id="status" placeholder="Status" onChange={e => setStatus(e.target.value)} ></input>
-      </form>
-      <button onClick={() => Customer()} id="createButton">Add</button>
-    </div>
+        <div>
+            <Customer />
+        </div>
   )
 }
 
-export default Customer;
+export default AddCustomers;
