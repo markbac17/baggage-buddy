@@ -16,7 +16,6 @@ delivery_status: "AT DEPOT"
 delivery_window_end_time: "Thu, 26 Mar 2020 18:42:00 GMT"
 delivery_window_start_time: "Thu, 26 Mar 2020 08:42:00 GMT" */}
 
-      <p>bag_tag_group: {props.customer.bag_tag_group}</p>
       <p>bag_tag_number: {props.customer.bag_tag_number}</p>
       <p>current_location: {props.customer.current_location}</p>
       <p>current_location_lat: {props.customer.current_location_lat}</p>

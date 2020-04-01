@@ -55,7 +55,7 @@ def select_delivery_data():
     print(data)
     mycursor.execute(sql)
     row_headers=[x[0] for x in mycursor.description]
-    rv = mycursor.fetchall()
+    rv = mycursor.fetchone()
     json_data=[]
     for result in rv:
         json_data.append(dict(zip(row_headers,result)))

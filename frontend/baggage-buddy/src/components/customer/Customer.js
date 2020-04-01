@@ -18,6 +18,7 @@ function Customer() {
         const response = await fetch(`http://baggage-buddy.duckdns.org:9014/select_delivery_data?data=${searchWTFile}`);
         const data = await response.json();
         setCustomer(data)
+        console.log(typeof(customer))
       } catch (error) {
         setIsError(true);
         console.log(error)
@@ -35,7 +36,8 @@ function Customer() {
       <form className={classes.root} noValidate autoComplete="off">
         <TextField id="file_ref" label="File reference" variant="outlined" onChange={e => setInputWTFile(e.target.value)}/>
         <Button variant="createButton" color="primary" onClick={e => setSearchWTFile(inputWTFile)}>Retrieve</Button>
-          {isLoading ? <p>Loading...</p> : (!isError && <CustomerCard customer={customer}/>)}
+        {isLoading ? <p>Loading...</p> : (!isError && <CustomerCard customer={customer}/>)}
+          
       </form>
       </div>
 );
