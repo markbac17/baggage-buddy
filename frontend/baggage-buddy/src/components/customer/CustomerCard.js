@@ -1,30 +1,55 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import QRCode from './CustomerQRCode'
+import TextField from '@material-ui/core/TextField';
 
-const CustomerCard = (props) => {
-{console.log(props.customer)}
+const useStyles = makeStyles({
+  root: {
+    maxWidth: 345,
+  },
+});
+
+export default function CustomerCard(props) {
+  const classes = useStyles();
+
   return (
-    <div>
-{/* data_storage_datetime_start: "Thu, 26 Mar 2020 03:42:00 GMT"
-data_storage_status: "PENDING"
-delivery_id: 995
-delivery_location_lat: 40.7228
-delivery_location_long: -73.9988
-delivery_location_name: "modest.hush.mash"
-delivery_location_zip: 99999
-delivery_qr_code: "TBN"
-delivery_status: "AT DEPOT"
-delivery_window_end_time: "Thu, 26 Mar 2020 18:42:00 GMT"
-delivery_window_start_time: "Thu, 26 Mar 2020 08:42:00 GMT" */}
-
-      <p>bag_tag_number: {props.customer.bag_tag_number}</p>
-      <p>current_location: {props.customer.current_location}</p>
-      <p>current_location_lat: {props.customer.current_location_lat}</p>
-      <p>current_location_long: {props.customer.current_location_long}</p>
-      <p>current_location_timestamp: {props.customer.current_location_timestamp}</p>
-      <p>data_storage_datetime_end: {props.customer.data_storage_datetime_end}</p>
-      <p>customer_id: {props.customer.customer_id}</p>    
-    </div>
-  )
+    <Card className={classes.root}>
+      <CardActionArea>
+        {/* <CardMedia
+          component="img"
+          alt="Contemplative Reptile"
+          height="140"
+          image="/static/images/cards/contemplative-reptile.jpg"
+          title="Contemplative Reptile"
+        /> */}
+        <QRCode data={props.customer.bt_number}/>
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="h2">Bag tag num: {props.customer.bt_number}</Typography>
+          <TextField id="bag_tag" label={props.customer.bt_ref} variant="outlined"/>
+          <Typography variant="body2" color="textSecondary" component="p">Tracer ref: {props.customer.bt_ref}</Typography>
+          <Typography variant="body2" color="textSecondary" component="p">Luggage color: {props.customer.color}</Typography>
+          <Typography variant="body2" color="textSecondary" component="p">Luggage type: {props.customer.type}</Typography>
+          <Typography variant="body2" color="textSecondary" component="p">Instructions: {props.customer.LD}</Typography>
+          <Typography variant="body2" color="textSecondary" component="p">Status: {props.customer.delivery_status}</Typography>
+          <Typography variant="body2" color="textSecondary" component="p">File ID: {props.customer.file_id}</Typography>
+          <Typography variant="body2" color="textSecondary" component="p">Customer Code: {props.customer.customer_id}</Typography>
+        </CardContent>
+      </CardActionArea>
+      <CardActions>
+        <Button size="small" color="primary">
+          Update
+        </Button>
+        <Button size="small" color="primary">
+          Delete
+        </Button>
+      </CardActions>
+    </Card>
+  );
 }
-
-export default CustomerCard;

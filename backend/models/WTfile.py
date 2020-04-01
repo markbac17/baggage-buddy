@@ -42,24 +42,21 @@ def select_delivery():
     rv = mycursor.fetchall()
     json_data=[]
     for result in rv:
-        json_data.append(dict(zip(row_headers,result)))
+        json_data = dict(zip(row_headers,result))
     return jsonify(json_data)
 
 @app.route('/select_delivery_data', methods=["GET"])
 def select_delivery_data():
     mycursor = mydb.cursor()
     data = request.args.get("data", "")
-    sql = "SELECT * FROM delivery_data WHERE bag_tag_group='" + data + "';"
-    print(sql)
+    sql = "SELECT * FROM delivery_items WHERE bag_tag_number='" + data + "';"
     values = (data)
-    print(data)
     mycursor.execute(sql)
+    return_values = mycursor.fetchone()
+    print(return_values.count)
     row_headers=[x[0] for x in mycursor.description]
-    rv = mycursor.fetchone()
-    json_data=[]
-    for result in rv:
-        json_data.append(dict(zip(row_headers,result)))
-    return jsonify(json_data)
+    json_data = dict(zip(row_headers,return_values))
+    return json_data
 
 @app.route('/select_all_deliveries', methods=["GET"])
 def select_all_deliveries():

@@ -34,7 +34,7 @@ function Customer() {
   return (
       <div> 
       <form className={classes.root} noValidate autoComplete="off">
-        <TextField id="file_ref" label="File reference" variant="outlined" onChange={e => setInputWTFile(e.target.value)}/>
+        <TextField id="bag_tag" label="Enter bag tag" variant="outlined" onChange={e => setInputWTFile(e.target.value)}/>
         <Button variant="createButton" color="primary" onClick={e => setSearchWTFile(inputWTFile)}>Retrieve</Button>
         {isLoading ? <p>Loading...</p> : (!isError && <CustomerCard customer={customer}/>)}
           
