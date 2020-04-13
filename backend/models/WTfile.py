@@ -3,7 +3,6 @@ import mysql.connector
 from flask_cors import CORS
 from flask_qrcode import QRcode
 
-
 app = Flask(__name__)
 
 cors = CORS(app)
@@ -21,82 +20,62 @@ def get_qrcode():
 # SELECT
 @app.route('/select_all_customers', methods=["GET"])
 def select_all_customers():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     sql = 'SELECT * from customer_data;'
     mycursor.execute(sql)
-    row_headers=[x[0] for x in mycursor.description]
-    rv = mycursor.fetchall()
-    json_data=[]
-    for result in rv:
-        json_data.append(dict(zip(row_headers,result)))
+    json_data = mycursor.fetchall()
     return jsonify(json_data)
 
 @app.route('/select_delivery', methods=["GET"])
 def select_delivery():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.args.get("data", "")
-    sql = "SELECT * FROM delivery_items WHERE bt_ref ='" + data + "';"
-    values = (data)
-    mycursor.execute(sql)
-    row_headers=[x[0] for x in mycursor.description]
-    rv = mycursor.fetchall()
-    json_data=[]
-    for result in rv:
-        json_data = dict(zip(row_headers,result))
+    sql = "SELECT * FROM delivery_items WHERE bt_ref ='%s';"
+    mycursor.execute(sql, data)
+    json_data = mycursor.fetchall()
     return jsonify(json_data)
 
 @app.route('/select_delivery_data', methods=["GET"])
 def select_delivery_data():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.args.get("data", "")
-    sql = "SELECT * FROM delivery_items WHERE bag_tag_number='" + data + "';"
-    values = (data)
-    mycursor.execute(sql)
-    return_values = mycursor.fetchone()
-    print(return_values.count)
-    row_headers=[x[0] for x in mycursor.description]
-    json_data = dict(zip(row_headers,return_values))
-    return json_data
+    sql = "SELECT * FROM delivery_items WHERE bag_tag_number='%s';"
+    mycursor.execute(sql,data)
+    json_data = mycursor.fetchone()
+    print(json_data)
+    if json_data:
+        return json_data
+    else:
+        json_data = {"empty":""}
+        return json_data
 
 @app.route('/select_all_deliveries', methods=["GET"])
 def select_all_deliveries():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     sql = 'SELECT * from delivery_data;'
     mycursor.execute(sql)
-    row_headers=[x[0] for x in mycursor.description]
-    rv = mycursor.fetchall()
-    json_data=[]
-    for result in rv:
-        json_data.append(dict(zip(row_headers,result)))
-    return jsonify(json_data)
+    json_data = mycursor.fetchall()
+    return json_data
 
 @app.route('/select_all_delivery_items', methods=["GET"])
 def select_all_delivery_items():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     sql = 'SELECT * from delivery_items;'
     mycursor.execute(sql)
-    row_headers=[x[0] for x in mycursor.description]
-    rv = mycursor.fetchall()
-    json_data=[]
-    for result in rv:
-        json_data.append(dict(zip(row_headers,result)))
+    json_data = mycursor.fetchall()
     return jsonify(json_data)
 
 @app.route('/select_all_secret_data', methods=["GET"])
 def select_all_secret_data():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     sql = 'SELECT * from secret_data_to_be_deleted;'
-    row_headers=[x[0] for x in mycursor.description]
-    rv = mycursor.fetchall()
-    json_data=[]
-    for result in rv:
-        json_data.append(dict(zip(row_headers,result)))
+    json_data = mycursor.fetchall()
     return jsonify(json_data)
 
 #INSERT
 @app.route('/insert_customers', methods=["POST"])
 def insert_customers():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
     print(data)
     sql = """INSERT INTO customer_data (
@@ -106,13 +85,16 @@ def insert_customers():
         VALUES (%s, %s, %s);"""
     values = (data['f_name'],data['l_name'],data['delivery_conf_status'])
     print(values)
+    print(sql)
     mycursor.execute(sql, values)
+    customer_num = mycursor.lastrowid
+    print(customer_num)
     mydb.commit()
-    return jsonify(['OK'])
+    return jsonify(customer_num)
 
 @app.route('/insert_deliveries', methods=["POST"])
 def insert_deliveries():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
     sql = """INSERT INTO delivery_data (
             delivery_qr_code,
@@ -152,7 +134,7 @@ def insert_deliveries():
 
 @app.route('/insert_delivery_items', methods=["POST"])
 def insert_delivery_items():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
     sql = """INSERT INTO delivery_items (
             bt_ref,
@@ -178,14 +160,14 @@ def insert_delivery_items():
 
 @app.route('/insert_secrets', methods=["POST"])
 def insert_secrets():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
     sql = """INSERT INTO secret_data_to_be_deleted (
             delivery_address,
             delivery_city, 
             delivery_phone_num,
             delivery_email) 
-            VALUES (?, ?, ?, ?)"""
+            VALUES (%s, %s, %s, %s)"""
     values = ("a", "b" ,"1" ,"2" )
     mycursor.execute(sql, values)
     return jsonify(result)
@@ -193,39 +175,40 @@ def insert_secrets():
 #UPDATE
 @app.route('/update_customers', methods=["POST"])
 def update_customers():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
     sql = """UPDATE customer_data SET 
-            customer_id = ?,
-            f_name = ?,
-            l_name = ?, 
-            delivery_conf_status = ?
-            WHERE customer_id = ?;"""
+            customer_id = %s,
+            f_name = %s,
+            l_name = %s, 
+            delivery_conf_status = %s
+            WHERE customer_id = %s;"""
     values = ('?','?','?','?','?')
     mycursor.execute(sql, values)
     return jsonify(result)
 
 @app.route('/update_deliveries', methods=["POST"])
 def update_deliveries():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
-    sql = """UPDATE delivery_items SET 
-            bt_ref = ?,
-            bag_tag_number = ?,
-            customer_id = ?,
-            delivery_status = ? 
-            WHERE bt_ref = ?;"""
-    values = ('?','?','?','?','?')
-    mycursor.execute(sql, values)
-    return jsonify(result)
+    print(data)
+    sql = """UPDATE `delivery_items` 
+        SET `delivery_status`= 'OUT FOR DELIVERY' 
+        WHERE file_id = '%s'"""
+    values = (data['delivery_id'])
+    result = mycursor.execute(sql, values)
+    mydb.commit()
+    print(values)
+    print(sql)
+    return {'result': 'OK'}
 
 @app.route('/update_delivery_items', methods=["POST"])
 def update_delivery_items():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
     sql = """UPDATE delivery_items SET 
-            bag_tag_number = ?, 
-            customer_id = ?, 
+            bag_tag_number = %s, 
+            customer_id = %s, 
             delivery_status = ? WHERE 
             bt_ref = ?;"""
     values = ('?','?','?','?')
@@ -234,7 +217,7 @@ def update_delivery_items():
 
 @app.route('/update_secrets', methods=["POST"])
 def update_secrets():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
     sql = """UPDATE secret_data_to_be_deleted SET 
             secret_id = ?, 
@@ -250,7 +233,7 @@ def update_secrets():
 #DELETE
 @app.route('/delete_customers', methods=["POST"])
 def delete_customers():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
     sql = """DELETE FROM customer_data 
             WHERE customer_id = ?;"""
@@ -260,7 +243,7 @@ def delete_customers():
 
 @app.route('/delete_deliveries', methods=["POST"])
 def delete_deliveries():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
     sql = """DELETE FROM delivery_items  
             WHERE bt_ref = ?;"""
@@ -270,7 +253,7 @@ def delete_deliveries():
 
 @app.route('/delete_delivery_items', methods=["POST"])
 def delete_delivery_items():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
     sql = """DELETE FROM delivery_items  
             WHERE bt_ref = ?;"""
@@ -280,7 +263,7 @@ def delete_delivery_items():
 
 @app.route('/delete_secrets', methods=["POST"])
 def delete_secrets():
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(dictionary=True)
     data = request.get_json()
     sql = """UPDATE secret_data_to_be_deleted 
             WHERE secret_id = ?;"""

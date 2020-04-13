@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import CustomerCard from "./CustomerCard";
+import AirportCard from "./AirportCard";
 
-function Customer() {
+function Airport() {
   const [customer, setCustomer] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -20,7 +20,7 @@ function Customer() {
         );
         const data = await response.json();
         setCustomer(data);
-        console.log(customer);
+        console.log(typeof customer);
       } catch (error) {
         setIsError(true);
         console.log(error);
@@ -50,15 +50,15 @@ function Customer() {
           onClick={(e) => setSearchWTFile(inputWTFile)}
         >
           Retrieve
-        </Button>
+        </Button></form>
         {isLoading ? (
           <p>Loading...</p>
         ) : (
-          !isError && <CustomerCard customer={customer} />
+          !isError && <AirportCard customer={customer} />
         )}
-      </form>
+      
     </div>
   );
 }
 
-export default Customer;
+export default Airport;
