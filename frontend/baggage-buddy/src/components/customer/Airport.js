@@ -7,9 +7,10 @@ import AirportCard from "./AirportCard";
 function Airport() {
   const [customer, setCustomer] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isRecord, setIsRecord] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [inputWTFile, setInputWTFile] = useState("");
-  const [searchWTFile, setSearchWTFile] = useState("JFKBA12345");
+  const [inputWTFile, setInputWTFile] = useState("JFKBA79472");
+  const [searchWTFile, setSearchWTFile] = useState("JFKBA79472");
   const lookupWTFile = () => {
     const getData = async () => {
       setIsLoading(true);
@@ -20,7 +21,7 @@ function Airport() {
         );
         const data = await response.json();
         setCustomer(data);
-        console.log(typeof customer);
+        console.log(data);
       } catch (error) {
         setIsError(true);
         console.log(error);
@@ -37,8 +38,9 @@ function Airport() {
 
   return (
     <div>
-      <form className={classes.root} noValidate autoComplete="off">
+      <form noValidate autoComplete="off">
         <TextField
+          size="small"
           id="bag_tag"
           label="Enter bag tag"
           variant="outlined"
@@ -47,16 +49,14 @@ function Airport() {
         <Button
           variant="createButton"
           color="primary"
+          variant="outlined"
           onClick={(e) => setSearchWTFile(inputWTFile)}
         >
           Retrieve
-        </Button></form>
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          !isError && <AirportCard customer={customer} />
-        )}
-      
+        </Button>
+       
+        {isLoading ? (<p>Loading...</p>) : (<AirportCard customer={customer} />)}
+        </form>
     </div>
   );
 }

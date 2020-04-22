@@ -3,7 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import CustomerCard from "./CustomerCard";
-
+import Map from "./Map"
+import Grid from '@material-ui/core/Grid';
 function Customer() {
   const [customer, setCustomer] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -16,10 +17,11 @@ function Customer() {
       setIsError(false);
       try {
         const response = await fetch(
-          `http://baggage-buddy.duckdns.org:9014/select_delivery_data?data=${searchWTFile}`
+          `http://baggage-buddy.duckdns.org:9014/select_delivery_data_2?data=${searchWTFile}`
         );
         const data = await response.json();
         setCustomer(data);
+        console.log('test')
         console.log(customer);
       } catch (error) {
         setIsError(true);
@@ -31,33 +33,31 @@ function Customer() {
   };
   const useStyles = makeStyles((theme) => ({
     root: { "& > *": { margin: theme.spacing(1) } },
+    media: {height: 300, paddingTop: '56.25%',}
   }));
+
   useEffect(() => lookupWTFile(), [searchWTFile]);
   const classes = useStyles();
 
   return (
     <div>
-      <form className={classes.root} noValidate autoComplete="off">
+      <Grid container   direction="column" justify="left" alignItems="left">
+      <form color="primary" noValidate autoComplete="off">
+        <Grid item>
         <TextField
           id="bag_tag"
+          size="small"
           label="Enter bag tag"
           variant="outlined"
           onChange={(e) => setInputWTFile(e.target.value)}
-        />
-        <Button
-          variant="createButton"
-          color="primary"
-          onClick={(e) => setSearchWTFile(inputWTFile)}
-        >
-          Retrieve
-        </Button>
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          !isError && <CustomerCard customer={customer} />
-        )}
+        /></Grid>
+        <Grid item>
+        <Button variant="createButton" color="primary" variant="outlined" onClick={(e) => setSearchWTFile(inputWTFile)} >
+          Retrieve</Button></Grid>
+        <Grid item>{isLoading ? (<p>Loading...</p>) : (!isError && <CustomerCard customer={customer} />)}</Grid>
       </form>
-    </div>
+      </Grid>
+      </div>
   );
 }
 

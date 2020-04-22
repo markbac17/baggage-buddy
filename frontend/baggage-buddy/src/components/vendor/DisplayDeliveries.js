@@ -38,9 +38,9 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-function DisplayDeliveryList(test) {
-  console.log("Display: " + test)
-  return <DeliveryList/>
+function DisplayDeliveryList(selected) {
+  console.log(`Display List:${selected}`)
+  return <DeliveryList data={selected}/>
 }
 
 function stableSort(array, comparator) {
@@ -75,7 +75,6 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ "aria-label": "select all deliveries" }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -107,6 +106,7 @@ function EnhancedTableHead(props) {
 EnhancedTableHead.propTypes = {
   classes: PropTypes.object.isRequired,
   numSelected: PropTypes.number.isRequired,
+  selected: PropTypes.array.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
   order: PropTypes.oneOf(["asc", "desc"]).isRequired,
@@ -132,7 +132,8 @@ const useToolbarStyles = makeStyles((theme) => ({
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
   const { numSelected, selected } = props;
-  console.log(numSelected, selected)
+  const selectedArray={selected}
+  console.log(`Toolbar:${selectedArray}`)
   return (
     <Toolbar className={clsx(classes.root, { [classes.highlight]: numSelected > 0 })}>
       {numSelected > 0 ? (<Typography className={classes.title} color="inherit" variant="subtitle1" >
@@ -150,29 +151,18 @@ const useStyles = makeStyles((theme) => ({
   root: { width: "100%" },
   paper: { width: "100%", marginBottom: theme.spacing(2) },
   table: { minWidth: 750 },
-  visuallyHidden: {
-    border: 0,
-    clip: "rect(0 0 0 0)",
-    height: 1,
-    margin: -1,
-    overflow: "hidden",
-    padding: 0,
-    position: "absolute",
-    top: 20,
-    width: 1,
-  },
-}));
+  visuallyHidden: {border: 0,clip: "rect(0 0 0 0)",height: 1,margin: -1,overflow: "hidden",padding: 0,position: "absolute",top: 20,width: 1,},}));
 
 function DisplayDeliveries(props) {
   const classes = useStyles();
-  const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("file_id");
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(20);
-  console.log(selected)
-  useEffect(() => {console.log("test:" + selected)})
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("file_id");
+  const [selected, setSelected] = useState([]);
+  const [page, setPage] = useState(0);
+  const [dense, setDense] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
+  console.log(`Display Deliveries:${selected}`)
+  // useEffect(() => {console.log(`useEffect:${selected}`)},[selected])
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -203,9 +193,9 @@ function DisplayDeliveries(props) {
         selected.slice(selectedIndex + 1)
       );
     }
-    console.log("First" + selected);
+    console.log(`before setSelected:${selected}`);
     setSelected(newSelected);
-    console.log("Second" + selected);
+    console.log(`after setSelected:${selected}`)
   };
 
   const handleChangePage = (event, newPage) => {setPage(newPage);
@@ -215,16 +205,18 @@ function DisplayDeliveries(props) {
     setPage(0);
   };
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, props.file.length - page * rowsPerPage);
+  const isSelected = (name) => {
+    return selected.indexOf(name) !== -1;
+  };
+
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, props.file.length - page * rowsPerPage);
 
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
-          <Table className={classes.table} aria-labelledby="tableTitle" size={dense ? "medium" : "small"}>
+          <Table className={classes.table} size={dense ? "medium" : "small"}>
             <EnhancedTableHead classes={classes} numSelected={selected.length} order={order}
               orderBy={orderBy} onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort} rowCount={props.file.length} />
@@ -236,8 +228,8 @@ function DisplayDeliveries(props) {
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
-                    <TableRow hover onClick={(event) => handleClick(event, p.file_id)} role="checkbox" aria-checked={isItemSelected} tabIndex={-1} key={p.file_id} selected={isItemSelected} >
-                      <TableCell padding="checkbox"><Checkbox checked={isItemSelected} inputProps={{ "aria-labelledby": labelId }}/></TableCell>
+                    <TableRow hover onClick={(event) => handleClick(event, p.file_id)} role="checkbox" tabIndex={-1} key={p.file_id} selected={isItemSelected} >
+                      <TableCell padding="checkbox"><Checkbox checked={isItemSelected} /></TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none">{p.file_id}</TableCell>
                       <TableCell component="th" scope="row"> {p.bt_ref}</TableCell>
                       <TableCell component="th" scope="row">{p.color}</TableCell>

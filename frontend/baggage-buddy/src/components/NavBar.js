@@ -30,7 +30,7 @@ function TabPanel(tab_props) {
       )
     }
     getUserLocation()
-  }, [token]);
+  }, []);
   console.log(userLocation)
   return (
     <Typography
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
 
 function NavBar() {
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -81,11 +81,11 @@ function NavBar() {
           <Tab label="Airport view" {...a11yProps(0)} />
           <Tab label="Customer view" {...a11yProps(1)} />
           <Tab label="Vendor view" {...a11yProps(2)} />
-          <Tab label="Customers to process" {...a11yProps(3)} />
+          <Tab label="Delivery view" {...a11yProps(3)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}><Airport /></TabPanel>
-      <TabPanel value={value} index={1}><Customer /></TabPanel>
+      <TabPanel value={value} index={1}><Customer/></TabPanel>
       <TabPanel value={value} index={2}><Vendor /></TabPanel>
       <TabPanel value={value} index={3}><Dashboard /></TabPanel>
     </div>
